@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+
+
+<project default="dist" name="eagle">
+	<property name="dir.raw.content" value="content" />
+	<property name="dir.www.content" value="dist/" />
+	<property name="dir.templates" value="src/template/default" />
+	<property name="builddir" value="dist" />
+	<taskdef name="markdown" classname="phing.tasks.ext.MarkdownTask" />
+	<taskdef name="template" classname="phing.tasks.ext.TemplateTask" />
+    <taskdef name="lessc" classname="phing.tasks.ext.less.LessCompilerTask" />
+
+    <!-- ============================================  -->
+    <!-- Target: zero                             -->
+    <!-- ============================================  -->
+<target name="zero">
+    <property file="C:\phing-repo\zero.properties" />
+    <property file="build.properties" />
+<echo>${projectname}</echo>
+</target>
+
+    <!-- ============================================  -->
+    <!-- Target: build                                 -->
+    <!-- ============================================  -->
+<target name="dist"  depends="zero" >
+
+    <delete dir="${builddir}" />
+    <mkdir dir="${builddir}" />
+<mkdir dir="dist/media" />
+<mkdir dir="dist/template" />
+<mkdir dir="dist/template/default" />
+<mkdir dir="dist/template/default/css" />
+
+<copy file="src/robots.txt" tofile="dist/robots.txt" overwrite="true"/>
+<copy file="src/page.php" tofile="dist/page.php" overwrite="true"/>
+<copy file="src/template/default/template.html" tofile="dist/template/default/template.html" overwrite="true"/>
+
+        <lessc targetdir="dist/template/default/css">
+            <fileset dir="src/template/default/css">
+                <include name="*.less" />
+            </fileset>
+        </lessc>
+<!-- copy /content md files before running markdown task, it deletes files -->
+
+        <copy todir="src/content">
+        <fileset dir="content">
+        <include name="*.md"/>
+        <include name="*/*.md"/></fileset>
+        </copy>
+        
+        
+		<markdown destination="${dir.www.content}" removefilesetdir="${dir.raw.content}">
+			<fileset dir="${dir.raw.content}">
+				<include name="*.md" />
+				<include name="**/*.md" />
+			</fileset>
+		</markdown>
+		
+		<template templatesdir="${dir.templates}">
+			<fileset dir="${dir.www.content}">
+				<include name="*.html" />
+				<include name="**/*.html" />
+			</fileset>
+		</template>
+
+
+
+        <!-- copy to web -->
+        <move file="content/" todir="."  includeemptydirs="true" />
+        <copy todir="C:\wamp\www\workspaces\${projectname}">
+ 			<fileset dir="dist">
+				<include name="*" />
+				<include name="*.*" />
+				<include name="*/*" />
+				<include name="*/*.*" />
+				<include name="*/*/*" />
+				<include name="*/*/*.*" />
+				<include name="*/*/*/*" />
+				<include name="*/*/*/*.*" />
+			</fileset>       
+        </copy>        
+        <!-- move src/content back to content/ -->
+        <copy todir="content">
+        <fileset dir="src/content">
+        <include name="*.md"/>
+        <include name="*/*.md"/></fileset>
+        </copy>
+        
+    <delete dir="src/content" />
+</target>
+
+
+
+
+
+</project>
