@@ -7,10 +7,10 @@
     <!-- Target: zero                             -->
     <!-- ============================================  -->
 <target name="zero" description="Initialize Phing " hidden="true">
-    <property file="C:\phing-repo\zero.properties" />
     <!-- Should check if project name exists -->
 <propertyprompt propertyName="projectname" defaultValue=""
         promptText="Enter project Name" />
+    <property file="C:\phing-repo\zero.properties" />
  </target>
     <!-- ============================================  -->
     <!-- Target: mdTemplate - Simple Project Skeleton                         -->
