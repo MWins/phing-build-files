@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<project default="dist" name="skeleton">
+    <!-- ============================================  -->
+    <!-- Target: zero                             -->
+    <!-- ============================================  -->
+<target name="zero" hidden="true" >
+    <property file="C:\phing-repo\zero.properties" />
+    <property file="build.properties" />
+<echo>${projectname}</echo>
+</target>
+
+    <!-- ============================================  -->
+    <!-- Target: build                                 -->
+    <!-- ============================================  -->
+<target name="build"  depends="zero" >
+    <delete dir="${builddir}" />
+    <mkdir dir="${builddir}" />
+</target>
+</project>
