@@ -1,0 +1,26 @@
+/* Reset */
+* { margin: 0; padding:0; }
+/* Typography */
+* { font-family: arial; color: #222; }
+h1,h2,h3,h4,h5,h6 { font-family: sans-serif; color: #555;}
+
+/* Layout */
+article { width: 75%; max-width: 800px; margin: 1em ; }
+h1,h2,h3,h4,h5,h6 { margin: .4em 0; }
+h1 { margin-left: 1em; }
+
+
+
+/* Navigation */
+nav { margin: 1em; border-bottom: 1px solid rgba(0,0,0,.2); }
+nav a:link { text-decoration: none;  font-size: 1.1em; border-right: rgba(0,0,0,.3) solid 1px;  display: inline-block; min-width: 130px;  padding: .2em 1em;}
+
+/* UI-elements */
+a:hover { background: rgba(0,0,0,.1);  }
+ul,ol { margin: .4em; list-style:none;  }
+pre { margin: 1em; background: rgba(33,33,33,,1); }
+code { background: rgba(33,33,33,.1); display: inline-block; padding: .2em; }
+
+/* Forms */
+
+/* Media Queries */ 
