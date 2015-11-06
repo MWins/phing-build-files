@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <title>TITLE</title>
+  <meta name="author" content="mwins">
+  <meta name="description" content="Detailed process of using Phing for a personal build system">
+  <meta name="keywords" content="phing, build system, build tool, php">
+  <link rel="stylesheet" href="template/css/styles.css" type="text/css">
+  <script href="template/js/script.js"></script>
+ </head>
+ <body>
+ <h1><a id="Phing__Personal_Build_System_0"></a>Phing - Personal Build System</h1>
+ <nav><a href="index.html"> Return to main page</a> <a href="https://github.com/MWins/phing-build-files" > Project Github page</a><a href="https://github.com/MWins/phing-build-files/archive/pre-release.zip"> Download </a> </nav>
+  <article>
+<h2><a id="What_is_PHING_and_how_does_it_help_0"></a>What is PHING and how does it help</h2>
+<p>Phing is a build tool written in PHP. It is based on the popular ANT build used in Java development. A build tool is an application which helps automate the process of building a project.</p>
+<h3><a id="Setting_it_up_4"></a>Setting it up</h3>
+<p>You need PHP. WAMP setups will work fine. If you have PEAR installed, it’s the preferred method because   you can customize Phing. To test it out, you can use the phing PHAR file. A PHAR is a PHP Archive file. A single file and run it by running a PHP command like <code>php phing.phar</code>.</p>
+<p>Here’s where to get Phing: <a href="https://www.phing.info/trac/wiki/Users/Installation">https://www.phing.info/trac/wiki/Users/Installation</a></p>
+<p>Documentation : <a href="https://www.phing.info/docs/guide/stable/">https://www.phing.info/docs/guide/stable/</a></p>
+<p>Here’s the build system github : <a href="https://github.com/MWins/phing-build-files">Phing-Personal-Build-System-Files</a></p>
+<h2><a id="Phing_Basics_14"></a>Phing Basics</h2>
+<p>Phing works off of build.xml files. In a classic build system, one would write a custom build file per project. There is no requirement for the file to be named <code>build.xml</code>. If another name is used, it would have to be provided as a command line argument. To use custom-build.xml, <code>phing -f custom-build.xml</code>.  Much easier to use the default and just call Phing with <code>phing</code> .</p>
+<p>The build files use a specific format to perform tasks. A simple breakdown of the format is</p>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+    &lt;project name=&quot;project_name&quot; default=&quot;task_set&quot;&gt;
+        &lt;target name=&quot;task_set&quot;&gt;
+            &lt;echo msg=&quot;Running phing&quot; /&gt;
+
+        &lt;/target&gt;
+    &lt;/project&gt;
+</code></pre>
+<p>Can see a slightly longer example file here : <a href="https://www.phing.info/docs/guide/stable/ch04s02.html">Simple build.xml</a></p>
+<p>Short explanation. Each build has to have a project element with name and a default target to run when called without parameters. A target is just a collection of tasks to execute. Each target has a name and can have an optional attribute for targets to run before execution. This lets you chain targets together.</p>
+<p>When phing is called without parameters, it looks for a build.xml in the directory. It reads the build.xml in and will execute the default target defined in the project element. If you wish to run a target other than the default, you pass it as a parameter : <code>phing other_target</code>.</p>
+<p>Tasks are predefined and there’s a fairly large list of available tasks like echo, copy file,make directory, move files, plus more.
+The documentation page has a full list, look under Core Tasks. Section C. defines Optional Tasks and these usually require installation of other packages to work, like PHPDoc,ApiGen,PHPMD,Git.</p>
+<p>There’s lots more to cover. Check the docs. Only going to cover one more concept here and that’s a Core Type of <code>filesets</code>. Filesets are how you tell what files to work with. It looks something like this :</p>
+<pre><code>&lt;fileset dir=&quot;etc&quot; &gt;
+  &lt;include name=&quot;httpd/**&quot; /&gt;
+  &lt;include name=&quot;php.ini&quot; /&gt;
+&lt;/fileset&gt;    
+</code></pre>
+<p>Translated this means in the etc directory include all files in the httpd directory recursively include any file/subdirectory found and include etc/php.ini in the file set. Note the use of the double asterik. A single asterik means give me all files in this directory. The double means all files and all files in subdirectories. If you wish to exclude directories, the <em>.</em> should work. Standard path conventions apply.  <code>.</code> means this directory , `./’ means this directory , ‘…/’ means the parent directory and so on.</p>
+<h3><a id="Building_a_Personal_Build_System_46"></a>Building a Personal Build System</h3>
+<p>This is the hands on part. I’m going to provide the build files and directory structure to a system. The system is a work in progress and is going to change often. It’s going from simple to complex. Which should provide the flexibility to see how it works and let you start customizing your own system.</p>
+<p>This is on windows (yes, I know).</p>
+<p>There’s two folders : C:\work and C:\phing-repo</p>
+<p>The work directory is the work space for projects.  There’s a build.xml here which does the following:</p>
+<p>If phing is called without a parameter, it displays a message to run <code>phing skeleton</code>. This is prevent accidentally starting the process which would require a project name to be entered.  Typing <code>phing skeleton</code> will start the ‘zero’ target because it is a dependecy of the ‘skeleton’ target.</p>
+<p>Zero prompts for a project name. Type the name of the project, note it will overwrite the project if it already exists. Zero loads a properties file from phing-repo named zero.properties. This contains specific information for the overall system configuration, path names mainly and information about you, email, name,etc. This can be edited to include whatever you want.  These properties are available as variables in phing build files after they are loaded. They can be referenced usiing this format ${property_name}. Note you can group variables using .'s. For instance, <a href="http://author.name">author.name</a> would be called using ${<a href="http://author.name">author.name</a>}. There’s tasks which can work with groups so you can echo the entire author. group of variables.</p>
+<p>Skeleton runs next and it performs some simple actions. Creates a directory with the project name. Inside that directory is created src/ and dist/ directories.  A basic build.xml is copied from phing-repo to project_name directory. Another properties is written out which contains the project name. Finally version.txt is copied over.</p>
+<p>Build is finished.</p>
+<p>Back at the command prompt, type <code>cd project_name</code>. Type <code>phing</code> .</p>
+<p>Should get a result like this :</p>
+<pre><code>    C:\work\rose&gt;phing
+    Buildfile: C:\work\rose\build.xml
+
+    skeleton &gt; zero:
+
+     [property] Loading C:\phing-repo\zero.properties
+     [property] Loading C:\work\rose\build.properties
+         [echo] rose
+
+    skeleton &gt; build:
+
+         [echo] Customize your build process for rose
+       [delete] Deleting directory C:\work\rose\dist
+        [mkdir] Created dir: C:\work\rose\dist
+
+    BUILD FINISHED
+
+    Total time: 1.8645 second
+</code></pre>
+<p>Super simple and almost useless. From this point you would add files to src/, customize the build.xml and your finished project would be in dist/ .  It’s important to remember you only edit the build.xml in the project_name folder. If you change the work/build.xml, it’ll cause problems.</p>
+<h3><a id="Adding_Features_91"></a>Adding Features</h3>
+<p>Let’s  create a slightly more complex build type for use in the work directory.  This will create a basic website structure which will be placed in the project src directory. The project build file will be expanded to give us a few more options as well such as deploying the files to a local web server so the project can be viewed.</p>
+<p>If we add more build types, we will have to edit the skeleton project because there would be two build.xml files in the phing-repo. Those could be named different and change the name when moved over. We don’t want lots of files floating around the top level of phing-repo. Keeping it organized will be important when it comes time expand the system. Will create a directory called ‘types’ just to organize things.</p>
+<p>Files for this step are in the simple-v2 folder. You can delete the contents of work/ and phing-repo/ and replace them with files from simple-v2/phing-repo being placed in C:\phing-repo. All other files/folders in simple-v2/ go into C:\work.</p>
+<p>First let’s make our adjustments.  In phing-repo we add two folders, shared and types. Move version.txt and zero.properties into shared. Rename build.xml to simple-build.xml.  We’re going to edit the work/build.xml by modifying the default target but we should update the file paths for skeleton.  We’re also going to change the hardcoded paths for the repo directory to use variables.</p>
+<p>The new lines for copying the build.xml, the location of the zero.properties file, and version.txt will be updated.</p>
+<pre><code>&lt;copy file=&quot;${config.repo.dir}/types/simple-build.xml&quot; tofile=&quot;${projectname}/build.xml&quot; overwrite=&quot;true&quot;&gt;
+&lt;/copy&gt;
+ &lt;copy file=&quot;${config.repo.dir}/shared/version.txt&quot; tofile=&quot;${projectname}/version.txt&quot; overwrite=&quot;true&quot;/&gt;
+</code></pre>
+<p>The default message should be changed as well since we have types we can no longer provide a simple message. Ideally we would list the available project types to be created. Keep in mind we want to be able to define multiple project types to help with development as much as possible. As you customize the process, you will want to add your own project types to this system.  There’s no way to get a list of available targets from within a build file. We have to resort to executing a system call to phing using the -l switch to get the targets.  How this works isn’t being covered so just use it, if curious you can expect the code. On the TARGET element, the hidden=“true” attribute is set to remove some targets from the listing.</p>
+<p>A new target has to be created. The project type will be a simple HTML site setup. Going to add a basic HTML index page, some common page types, common directories like template,media. We also want some common files used for websites like robots.txt. These files will be copied from phing-repo to project_name/src when the build process runs. The build.xml file for this project type will have some increased functionality.</p>
+<p>in phing-repo/types we create a directory named <code>html</code> . Add files/folders, whatever we want.  Then all it takes is a <code>phing html</code> and the files will be copied into place.</p>
+<p>The normal process when running a build would be take the source files from src/ and perform some tasks on them. Before you do that, the files in src/ can be modified to match the project. The development part of the process. Add content, images, write some CSS, whatever it is that needs to be done.  When complete, run phing with the <code>build</code> target. In this case it just copies the files over.</p>
+<p>Might be asking, ‘why even bother?’. This is a simple process for an example. The functionality to be added at this point would be more complex with the additional processing requirement.  This is what we want to add.</p>
+<ul>
+<li>Increment the version of the project.</li>
+<li>Create an Archive of the src folder with the version # as part of the file name.</li>
+<li>Create an Archive of the dist folder with version # as if it were being released for public consumption</li>
+<li>Create an Archive of the entire project</li>
+<li>Mock Build the project and deploy it to the local webserver for inspection</li>
+<li>Build the project for dist.</li>
+</ul>
+<p>These should ideally be written so the build process itself can contain more advanced functionality but it doesn’t require additional modification to these targets.</p>
+<p>Starting with the first target. Increment the version of the project. The version format is three numbers joined by periods. 0.0.0 - first is major, second is minor, third is patch. We want to prompt for the type to increment. Incrementing it is easy.</p>
+<ul>
+<li>Create an Archive of the src folder with the version # as part of the file name.</li>
+<li>Create an Archive of the dist folder with version # as if it were being released for public consumption</li>
+<li>Create an Archive of the entire project</li>
+</ul>
+<p>Again this is straight forward. We call the zip task. Provide a FILESET, put the resulting file in the project root directory. Added creating a tar.gz of the dist/ folder (so could offer the choice of download formats). These targets were added :</p>
+<ul>
+<li>zipsrc</li>
+<li>zipdist</li>
+<li>tardist</li>
+<li>zip</li>
+</ul>
+<p>Only thing to note is that the zipdist and tardist, rerun the build target before compressing the files.</p>
+<p>** Note ** The ziptask requires php_zip.dll .  You may not have it on your system and will have to grab a copy from here : <a href="https://pecl.php.net/package/zip/1.12.4/windows">https://pecl.php.net/package/zip/1.12.4/windows</a>  .Place the .dll in C:\wamp\bin\php\php5.x.x\ext. If you still get an error ,it must be enabled in php.ini (not from the WAMP menu but in C:\wamp\bin\php\php5.x.x\php.ini , this is the command line ini file for php).</p>
+<p>Be very careful with version.txt or any property loaded through Phing. extra lines will be considered part of the property. For example if version.txt has an extra line, it will cause tar and zip tasks to both fail. Zip will say it worked. Tar will say it failed.</p>
+<p>Last two are  <code>local</code> and <code>build</code> . <code>build</code> is just a straight copy from src/ to dist/ . <code>local</code> runs <code>build</code> first then copies the dist/ folder contents to the config.web.dir folder which is defined in zero.properties , default is C:\wamp\www\workspaces .</p>
+<p>One last target which should be added is a ‘full run’ target which would be taking the above targets in a sequence, ie a build.  I have to test these targets before that can be added. I’ll correct the html-build.xml before posting to github so you can reference the file with some assurance it actually works.</p>
+<p>Last problem is using the depends attribute results in the target ‘zero’ running multiple times. Removing the depends=“zero” and performing a check for the variables is one option. Or to only run zero if the properties aren’t set is a better option. Believe the latter is the best option. Will also have to update the property <code>versionnumber</code> after levelup runs.</p>
+<h3><a id="Whats_next__155"></a>What’s next ?</h3>
+<p>Want to add more of a task runner style project type. Downloading Wordpress, creating a database, copying the files over to the web directory.</p>
+<p>Adding the Markdown, Template and LESS task types and using them in another project type is also on the list.</p>
+<p>Before the markdown/template/less combination, a project type to just render Markdown files should provide a stepping stone.</p>
+<p>A project type using composer to install php packages and creating a build ready to deploy to the web.</p>
+<h3><a id="Final_thoughts_166"></a>Final thoughts</h3>
+<p>The second project type took much longer to complete and test than expected. Which prevented from adding the Wordpress project type. I’ll just have to expand this to at least a 3 part post to cover the process of creating a Build System with Phing.  This post is probably a bit disjointed and lacks some details on the process. If any part isn’t clear, let me know and I’ll gladly expand on any points I’m capable of addressing. If you follow the steps and get your own build system going, let me know.</p>
+<h2><a id="Intro__expectations_and_an_example_190"></a>Intro - expectations and an example</h2>
+<p>A build tool can aid development by automating tasks. Do not assume using a build tool will speed up development. How it helps is by defining the process or workflow of projects. I often call it the transition from ‘I’m building a website’ to ‘I’m building version 0.2.2 of project X’.</p>
+<p>Let’s take a simple example as to how it can help. We have ten articles that are in Markdown format. We want to process these with Markdown and save as HTML files for later use in a website. There’s several options for how you complete this task. Could write a script to parse the output in PHP using PHPMarkdown, use an online tool to convert to html, or use a desktop program like MarkDownPad.  Using MarkDownPad the process is open file, convert to html, save result to file, close source file. Repeat. Boring, mundane task. Perfect thing to automate.</p>
+<h3><a id="Build_Tool_vs_Task_Runner_201"></a>Build Tool vs. Task Runner</h3>
+<p>Two very popular tools in web development as of 2015 are grunt and gulp. Both node.js projects which are task runners/build tools. How does Phing compare to them? Grunt and Gulp are better for front end projects. Almost everything Phing does they can do and in some cases they perform better. But they are written in Javascript. You have to write the build files in javascript. They have a large number of files. Some issues on windows with long path names.</p>
+<p>Phing - good points (IMO)</p>
+<ul>
+<li>XML build files</li>
+<li>use PHP for tasks</li>
+<li>a PHAR file is availble</li>
+</ul>
+<p>XML build files are better because it removes the need for knowing PHP to use the tool. XML files are easier to generate from forms than programming languages like PHP or javascript. Being XML, a build file can be validated.</p>
+<h3><a id="Verisioning_212"></a>Verisioning</h3>
+<p>If you plan to use Phing for project releases, you need to understand the 0.0.0 format. This is a simple system to define the  Major Version . Minor Version . BugFix of a project. Major should denote significant changes in project execuction or a break in compability with prior versions. Can also be used to denote marked feature increases. Minor is for changes which do not result in major changes to the nature of the project. Patch is just a fix release.</p>
+<p>More info here : <a href="http://semver.org/">http://semver.org/</a></p>
+</article>
+ </body>
+</html>
