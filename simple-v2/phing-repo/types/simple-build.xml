@@ -4,7 +4,7 @@
     <!-- Target: zero                             -->
     <!-- ============================================  -->
 <target name="zero" hidden="true" >
-    <property file="C:\phing-repo\zero.properties" />
+    <property file="C:\phing-repo\shared\zero.properties" />
     <property file="build.properties" />
 <echo>${projectname}</echo>
 </target>
