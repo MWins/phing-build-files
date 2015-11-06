@@ -7,10 +7,14 @@ Get PHP and get Phing. Preferably the PEAR install. Create two directories (wind
 
 Open up a command prompt and cd to C:\work, type `phing`. The build process will start and it will list available project types to create. As of v2, it's limited to 2 types. simple and html. 
 
+
+#### simple - project type
 Simple is a placeholder for developing your own build process. It only creates two directories, copies build.xml and a project.properties file to a directory created with the project name. You will be prompted for the project name. 
 
+#### html - project type
 html is an example project type which copies the contents of the C:\phing-repo\types\html\ directory into the C:\work\project_name\ directory. This includes a build.xml file,version.txt,project.properties. The contents of html/ can be changed, edit,remove,add files as desired to create your standard HTML site. This will serve as the html template for you system. 
 
+### Step Two
 Once a project has been created, you `cd project_name` and run `phing` again. This will list the available 'targets' or collection of tasks available based on this build file. At this point, the files in this folder are unique and changes will not apply to future projects. Customize as desired and use the already defined 'targets' to perform some basic tasks like : create a release, zip or tar the src/dist folders or zip/tar the entire project, deploy the build to a local web server. Each of those options will be outlined if you type `phing` in the project directory. 
 
 It is expected to modify the build.xml in the project directory to suit the specific build process. It is recommended to create new targets and use `<phingcall target="target_name">` in the existing targets. Set the `hidden` attribute to true if you do not want these to display in the help screen. 
