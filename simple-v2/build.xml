@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<project default="default" name="master">
+    <!-- ============================================  -->
+    <!-- Target: default                           -->
+    <!-- ============================================  -->
+<target name="default" description="The default target used when no arguments have been given." hidden="true">
+    <exec command="phing -f ${phing.file} -l" outputProperty="phing_targets" />
+    <echo>Please select a target.</echo>
+    <echo>${phing_targets}</echo>  
+</target>
+  
+    <!-- ============================================  -->
+    <!-- Target: zero                             -->
+    <!-- ============================================  -->
+<target name="zero" description="Initialize Phing " hidden="true">
+        <!-- Should check if project name exists -->
+    <propertyprompt propertyName="projectname" defaultValue=""
+            promptText="Enter project Name" />
+    <property file="C:\phing-repo\shared\zero.properties" />
+ </target>
+    <!-- ============================================  -->
+    <!-- Target: mdTemplate - Simple Project Skeleton                         -->
+    <!-- ============================================  -->
+<target name="skeleton" description="Simple Project Skeleton  " depends="zero"> 
+    <mkdir dir="${projectname}" />
+    <mkdir dir="${projectname}/dist" />
+    <mkdir dir="${projectname}/src" />
+    <copy file="${config.repo.dir}/types/simple-build.xml" tofile="${projectname}/build.xml" overwrite="true">
+    </copy>
+    <echo file="${projectname}/build.properties" >projectname=${projectname}</echo>
+    <copy file="${config.repo.dir}/shared/version.txt" tofile="${projectname}/version.txt" overwrite="true"/>
+</target>
+    <!-- ============================================  -->
+    <!-- Target: html - Simple HTML Project Skeleton                         -->
+    <!-- ============================================  -->
+<target name="html" description="Simple HTML Project Skeleton  " depends="zero"> 
+    <mkdir dir="${projectname}" />
+    <mkdir dir="${projectname}/dist" />
+    <mkdir dir="${projectname}/src" />
+    <copy file="${config.repo.dir}/types/html-build.xml" tofile="${projectname}/build.xml" overwrite="true">
+    </copy>
+    <echo file="${projectname}/build.properties" >projectname=${projectname}</echo>
+    <copy file="${config.repo.dir}/shared/version.txt" tofile="${projectname}/version.txt" overwrite="true"/>
+    <copy todir="${projectname}/src" >
+        <fileset dir="${config.repo.dir}/types/html">
+            <include name="****" />
+        </fileset>
+    </copy>
+</target>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</project>
