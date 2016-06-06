@@ -8,7 +8,7 @@
  <phingcall target="date"></phingcall>
           <propertyprompt propertyName="projectname" defaultValue=""
                   promptText="Enter project Name" />
-          <property file="C:\phing-repo\shared\zero.properties" />
+          <property file="zero.properties" />
        </target>
 
     <!-- ============================================  -->
