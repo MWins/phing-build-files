@@ -1,0 +1,53 @@
+    <?xml version="1.0"?>
+      <project default="wp" name="master">
+          <!-- ============================================  -->
+          <!-- Target: zero                             -->
+          <!-- ============================================  -->
+      <target name="zero" description="Initialize Phing " hidden="true">
+              <!-- Should check if project name exists -->
+ <phingcall target="date"></phingcall>
+          <propertyprompt propertyName="projectname" defaultValue=""
+                  promptText="Enter project Name" />
+          <property file="C:\phing-repo\shared\zero.properties" />
+       </target>
+
+    <!-- ============================================  -->
+          <!-- Target: wp - wordpress local install                     -->
+          <!-- ============================================  -->
+      <target name="wp"  description="Install Wordpress to localhost" depends="zero" >
+          <mkdir dir="${projectname}" />
+        <unzip file="${config.repo.dir}/types/wordpress/latest.zip" todir="${config.web.dir}/${projectname}">
+       </unzip>
+       <copy tofile="${config.web.dir}/${projectname}/wordpress/wp-config.php" file="${config.repo.dir}/types/wordpress/wp-config-sample.php" >
+           <filterchain>
+               <replacetokens  begintoken="%%" endtoken="%%">
+               <token key="DB_NAME" value="${projectname}"/>
+               <token key="DB_USER" value="${projectname}_user"/>
+               <token key="DEFAULT_PASSWORD" value="${db.default_password}"/>
+               </replacetokens>
+               </filterchain>
+       </copy>
+       <!-- replace TOKENS in files  -->
+             <copy todir="${projectname}/src" >
+   
+       <fileset dir="${config.sqlfiles.dir}" id="foos">
+       <include name="*.sql"></include>
+       </fileset>
+       <filterchain>
+           <replacetokens  begintoken="%%" endtoken="%%">
+           <token key="DB_NAME" value="${projectname}"/>
+           <token key="DB_USER" value="${projectname}_user"/>
+           <token key="DEFAULT_PASSWORD" value="${db.default_password}"/>
+           </replacetokens>
+           </filterchain>
+        </copy>
+       <pdosqlexec url="mysql:host=${db.mysql.host};" userid="${db.mysql.user}" password="${db.mysql.password}" >
+         <fileset dir="${projectname}/src">
+             <include name="*.sql"/>
+             </fileset>
+       </pdosqlexec>
+       
+    <exec command="${browser.${browser.default}.path} localhost/${config.web.path}/${projectname}" passthru="true" />     
+   </target>       
+
+      </project>
